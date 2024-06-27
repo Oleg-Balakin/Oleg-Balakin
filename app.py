@@ -24,10 +24,8 @@ else:
     used_pairs = set()
 
 # Function to handle button click
-def on_button_clicked(b):
+def on_button_clicked(target_value):
     global data, used_pairs
-
-    target_value = 1 if b.label == 'Да' else 0
 
     # Get selected job names
     job1 = st.session_state.left_dropdown
@@ -46,7 +44,7 @@ def reset_dropdowns():
 
     while True:
         job1, job2 = random.sample(jobs, 2)
-        if (job1, job2) not in used_pairs:
+        if (job1, job2) not in used_pairs and (job2, job1) not in used_pairs:
             break
 
     st.session_state.left_dropdown = job1
@@ -77,8 +75,14 @@ if uploaded_file is not None:
 
         col1, col2 = st.columns(2)
         with col1:
-            button_yes = st.button("Да", on_click=on_button_clicked)
+            if st.button("Да"):
+                on_button_clicked(1)
         with col2:
-            button_no = st.button("Нет", on_click=on_button_clicked)
+            if st.button("Нет"):
+                on_button_clicked(0)
 
         st.write(data)
+    else:
+        st.error("The file must contain more than one job.")
+else:
+    st.info("Please upload an Excel file to start.")
